@@ -74,4 +74,5 @@ if __name__ == '__main__':
 
     for f in os.listdir('.'):
         if f.endswith('.pdb'):
-            shutil.move(f, os.path.join(pdb_path, task_id + '_' + f))
+            subprocess.check_call(['gzip', f])
+            shutil.move(f + '.gz', os.path.join(pdb_path, task_id + '_' + f + '.gz'))
