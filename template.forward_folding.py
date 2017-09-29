@@ -28,7 +28,7 @@ if __name__ == '__main__':
     psipred_ss2 = # secondary structure predictions by PsiPred
     
     data_output_path = # path to output the data
-    nstruct = 10 # number of structures to generate for each job
+    nstruct = '10' # number of structures to generate for each job
 
     task_id = os.environ['SGE_TASK_ID']
 
