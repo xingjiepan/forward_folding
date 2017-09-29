@@ -70,6 +70,8 @@ if __name__ == '__main__':
     extract_command = [extract_pdb_app,
                       '-in:file:silent', 'default.out']
 
+    subprocess.check_call(extract_command)
+
     for f in os.listdir('.'):
         if f.endswith('.pdb'):
             shutil.move(f, os.path.join(pdb_path, task_id + '_' + f))
