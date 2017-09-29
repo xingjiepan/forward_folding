@@ -16,10 +16,12 @@
 
 import os
 import subprocess
+import shutil
 
 
 if __name__ == '__main__':
     ab_initio_app = 'AbinitioRelax.linuxgccrelease' # The ab initio relax application
+    extract_pdb_app = 'extract_pdbs.linuxgccrelease' # The application to extract pdbs from a silent file
     flags = 'flags/standard_flags' # flag file
     fasta = # input fasta sequence
     frag3 = # 3mers fragment set
@@ -30,7 +32,22 @@ if __name__ == '__main__':
     data_output_path = # path to output the data
     nstruct = '10' # number of structures to generate for each job
 
+    ###############################################################
+
     task_id = os.environ['SGE_TASK_ID']
+
+    pdb_path = os.path.abspath(os.path.join(data_output_path, 'pdbs'))
+    scratch_path = os.path.join(data_output_path, 'scratches')
+    my_scratch_path = os.path.join(scratch_path, task_id)
+
+    for p in [pdb_path, scratch_path, my_scratch_path]:
+        try:
+            if not os.path.exists(p):
+                os.path.mkdir(p)
+        except:
+            continue
+
+    # Run ab initio
 
     rosetta_command = [ab_initio_app,
                        '@' + flags,
@@ -40,8 +57,19 @@ if __name__ == '__main__':
                        '-in:file:native', native,
                        '-psipred_ss2', psipred_ss2,
                        '-nstruct', nstruct,
-                       '-out:sf', os.path.join(data_output_path, task_id + '_score.fsc'),
-                       '-out:file:silent', os.path.join(data_output_path, task_id + '_default.out'),
+                       '-out:sf', os.path.join(my_scratch_path, 'score.fsc'),
+                       '-out:file:silent', os.path.join(my_scratch_path, 'default.out'),
                        '-seed_offset', task_id] 
 
     subprocess.check_call(rosetta_command)
+
+    # Extract pdbs
+
+    os.chdir(my_scratch_path)
+
+    extract_command = [extract_pdb_app,
+                      '-in:file:silent', 'default.out']
+
+    for f in os.listdir('.'):
+        if f.endswith('.pdb'):
+            shutil.move(f, os.path.join(pdb_path, task_id + '_' + f))
