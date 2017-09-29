@@ -43,7 +43,7 @@ if __name__ == '__main__':
     for p in [pdb_path, scratch_path, my_scratch_path]:
         try:
             if not os.path.exists(p):
-                os.path.mkdir(p)
+                os.mkdir(p)
         except:
             continue
 
