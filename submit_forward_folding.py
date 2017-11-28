@@ -14,7 +14,8 @@ def generate_fragments(input_pdb, data_path):
     os.chdir(data_path)
     
     output_path = 'fragments'
-    shutil.rmtree(output_path)
+    if os.path.exists('fragments'):
+      shutil.rmtree(output_path)
 
     proc = subprocess.Popen(['klab_generate_fragments',
                            '-m', '100',
@@ -48,7 +49,8 @@ def submit_forward_folding_jobs(input_pdb, data_path, frag_job_id, num_jobs, nst
     frag_data_dir = os.path.join(data_path, 'fragments', 'inpuA')
 
     for f in ['inpuA.200.3mers.gz', 'inpuA.200.9mers.gz', 'inpuA.fasta', 'inpuA.psipred_ss2']:
-        os.remove(os.path.join(input_dir, f))
+        if os.path.exists(os.path.join(input_dir, f)):
+            os.remove(os.path.join(input_dir, f))
         os.symlink(os.path.abspath(os.path.join(frag_data_dir, f)), os.path.join(input_dir, f))
 
     cmd = ['qsub',
@@ -91,5 +93,17 @@ def forward_folding(input_pdb, data_path, num_jobs, nstruct_per_job):
 
 
 if __name__ == '__main__':
-  forward_folding('/netapp/home/xingjiepan/Softwares/precise_backbone_design/data/design_antiparallel_3_8_helix_20_100_4genBB/788/design.pdb',
-      'data/design_antiparallel_3_8_helix_20_100_4genBB_788', 2000, 10)
+  
+  for i in [788, 549, 631, 915, 231]:
+      forward_folding('/netapp/home/xingjiepan/Softwares/precise_backbone_design/data/design_antiparallel_3_8_helix_20_100_4genBB/{0}/design.pdb'.format(i),
+          'data/design_antiparallel_3_8_helix_20_100_4genBB_{0}'.format(i), 2000, 10)
+
+  for i in [837, 991, 358, 842, 627]:
+      forward_folding('/netapp/home/xingjiepan/Softwares/precise_backbone_design/data/design_antiparallel_3_8_helix_20_120_4genBB/{0}/design.pdb'.format(i),
+          'data/design_antiparallel_3_8_helix_20_120_4genBB_{0}'.format(i), 2000, 10)
+
+  for i in [185, 298, 24, 939, 286]:
+      forward_folding('/netapp/home/xingjiepan/Softwares/precise_backbone_design/data/design_antiparallel_3_8_helix_20_140_4genBB/{0}/design.pdb'.format(i),
+          'data/design_antiparallel_3_8_helix_20_140_4genBB_{0}'.format(i), 2000, 10)
+
+
