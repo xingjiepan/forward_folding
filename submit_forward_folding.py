@@ -48,13 +48,14 @@ def submit_forward_folding_jobs(input_pdb, data_path, frag_job_id, num_jobs, nst
     frag_data_dir = os.path.join(data_path, 'fragments', 'inpuA')
 
     for f in ['inpuA.200.3mers.gz', 'inpuA.200.9mers.gz', 'inpuA.fasta', 'inpuA.psipred_ss2']:
-        shutil.copy(os.path.join(frag_data_dir, f), input_dir)
+        os.remove(os.path.join(input_dir, f))
+        os.symlink(os.path.abspath(os.path.join(frag_data_dir, f)), os.path.join(input_dir, f))
 
     cmd = ['qsub',
            '-e', os.path.join(data_path, 'job_outputs'),
            '-o', os.path.join(data_path, 'job_outputs'),
            '-t', '1-{0}'.format(num_jobs),
-           '-h', frag_job_id,
+           '-hold_jid', frag_job_id,
            './forward_folding.py',
            os.path.join(input_dir, 'inpuA.fasta'),
            os.path.join(input_dir, 'inpuA.200.3mers.gz'),
@@ -65,7 +66,6 @@ def submit_forward_folding_jobs(input_pdb, data_path, frag_job_id, num_jobs, nst
            str(nstruct_per_job)]
 
     subprocess.check_call(cmd)
-
 
 def forward_folding(input_pdb, data_path, num_jobs, nstruct_per_job):
     '''Generate fragments and do forward folding.'''
