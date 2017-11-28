@@ -10,8 +10,12 @@ def generate_fragments(input_pdb, data_path):
     '''Generate fragments and save the fragments into the data_path.
     Return the job id.
     '''
-    output_path = os.path.join(data_path, 'fragments')
-   
+    cwd = os.getcwd()
+    os.chdir(data_path)
+    
+    output_path = 'fragments'
+    shutil.rmtree(output_path)
+
     proc = subprocess.Popen(['klab_generate_fragments',
                            '-m', '100',
                            '-x', '10',
@@ -20,7 +24,18 @@ def generate_fragments(input_pdb, data_path):
                            input_pdb],
                            stdout=subprocess.PIPE)
    
-    m = re.match(r"Fragment generation jobs started with job ID (\d+).", proc.stdout)
+    if proc.stdout:
+      stdout = proc.stdout.read().decode()
+      print(stdout)
+    if proc.stderr:
+      print(proc.stderr.read().decode())    
+    
+    for line in stdout.split('\n'): 
+        m = re.match(r"Fragment generation jobs started with job ID (\d+).", line)
+        if m:
+          break
+
+    os.chdir(cwd)
 
     return m.group(1) 
    
@@ -60,19 +75,21 @@ def forward_folding(input_pdb, data_path, num_jobs, nstruct_per_job):
   
     # Make a local copy of the input pdb
 
-    local_input_pdb = os.path.join(data_path, 'inputs', 'input.pdb')
+    input_pdb = os.path.abspath(input_pdb)
+    local_input_pdb = os.path.abspath(os.path.join(data_path, 'inputs', 'input.pdb'))
     
-    if not os.path.samefile(input_pdb, local_input_pdb):
+    if os.path.normpath(input_pdb) != os.path.normpath(local_input_pdb):
         shutil.copy(input_pdb, local_input_pdb)
 
     # Generate fragments
 
-    frag_job_id = generate_fragments(input_pdb, data_path)
+    frag_job_id = generate_fragments(local_input_pdb, data_path)
 
     # Run forward folding
 
-    submit_forward_folding_jobs(input_pdb, data_path, frag_job_id, num_jobs, nstruct_per_job)
+    submit_forward_folding_jobs(local_input_pdb, data_path, frag_job_id, num_jobs, nstruct_per_job)
 
 
 if __name__ == '__main__':
-    pass
+  forward_folding('/netapp/home/xingjiepan/Softwares/precise_backbone_design/data/design_antiparallel_3_8_helix_20_100_4genBB/788/design.pdb',
+      'data/design_antiparallel_3_8_helix_20_100_4genBB_788', 2000, 10)
