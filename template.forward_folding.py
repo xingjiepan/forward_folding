@@ -1,5 +1,5 @@
-#!/usr/bin/python3
-#$ -S /usr/bin/python3             #-- the shell for the job                                                                                                          
+#!/usr/bin/env python3
+#$ -S /netapp/home/xingjiepan/.local/bin/python3  #-- the shell for the job                                                                                                          
 #$ -cwd                            #-- tell the job that it should start in your working directory
 #$ -r y                            #-- tell the system that if a job crashes, it should be restarted
 #$ -l mem_free=3G                  #-- submits on nodes with enough free memory (required)
