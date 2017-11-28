@@ -46,7 +46,7 @@ def submit_forward_folding_jobs(input_pdb, data_path, frag_job_id, num_jobs, nst
            os.path.join(input_dir, 'inpuA.200.9mers.gz'),
            os.path.join(input_dir, 'input.pdb'),
            os.path.join(input_dir, 'inpuA.psipred_ss2'),
-           os.path.join(data_path, 'outputs')
+           os.path.join(data_path, 'outputs'),
            str(nstruct_per_job)]
 
     subprocess.check_call(cmd)
