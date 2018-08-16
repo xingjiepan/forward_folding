@@ -50,17 +50,19 @@ def forward_folding(ab_initio_app, extract_pdb_app, flags, fasta, frag3, frag9, 
 
     # Extract pdbs
 
-    os.chdir(my_scratch_path)
+    if extract_pdb_app:
 
-    extract_command = [extract_pdb_app,
-                      '-in:file:silent', 'default.out']
+        os.chdir(my_scratch_path)
 
-    subprocess.check_call(extract_command)
+        extract_command = [extract_pdb_app,
+                          '-in:file:silent', 'default.out']
 
-    for f in os.listdir('.'):
-        if f.endswith('.pdb'):
-            subprocess.check_call(['gzip', f])
-            shutil.move(f + '.gz', os.path.join(pdb_path, task_id + '_' + f + '.gz'))
+        subprocess.check_call(extract_command)
+
+        for f in os.listdir('.'):
+            if f.endswith('.pdb'):
+                subprocess.check_call(['gzip', f])
+                shutil.move(f + '.gz', os.path.join(pdb_path, task_id + '_' + f + '.gz'))
 
 
 if __name__ == '__main__':
