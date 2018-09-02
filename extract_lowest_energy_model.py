@@ -50,7 +50,7 @@ def extract_lowest_energy_model(data_path):
     # Get the ID of the lowest scoring model
 
     data = get_data_tuples_for_a_data_set(data_path)
-    lowest_energy_model_tuple = min(data, key=lambda x : x[3])
+    lowest_energy_model_tuple = min(data, key=lambda x : x[2])
     print('The lowest energy model for {0} is {1}'.format(data_path, lowest_energy_model_tuple))
 
     # Extract the lowest scoring model
