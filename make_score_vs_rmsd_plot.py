@@ -51,15 +51,16 @@ def make_score_vs_rmsd_plot_for_a_data_set(data_path):
     X = [t[3] for t in data]
     Y = [t[2] for t in data]
 
-    x_90 = np.percentile(X, 90)
-    y_90 = np.percentile(Y, 90)
+    x_80 = np.percentile(X, 80)
+    y_80 = np.percentile(Y, 80)
 
     plt.scatter(X, Y, s=2)
     
     x_min, x_max, y_min, y_max = plt.axis()
-    plt.axis([0, x_90, min(Y) - 3, y_90])
+    plt.axis([0, x_80 + 2, min(Y) - 3, y_80 + 10])
 
-    plt.show()
+    #plt.show()
+    plt.savefig(os.path.join(data_path, 'score_vs_rmsd.png'))
 
 
 if __name__ == '__main__':
