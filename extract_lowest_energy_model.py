@@ -71,6 +71,9 @@ def extract_lowest_energy_model(data_path):
         elif f.startswith('S_00'):
             os.remove(f)
 
+        elif f.startswith('F_00'):
+            os.remove(f)
+
     os.chdir(cwd)
 
 def extract_lowest_energy_model_for_multiple_data_sets(data_paths):
