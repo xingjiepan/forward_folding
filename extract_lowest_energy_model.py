@@ -52,11 +52,16 @@ def extract_lowest_energy_model(data_path):
     data = get_data_tuples_for_a_data_set(data_path)
     lowest_energy_model_tuple = min(data, key=lambda x : x[2])
     print('The lowest energy model for {0} is {1}'.format(data_path, lowest_energy_model_tuple))
+    lowest_rms_model_tuple = min(data, key=lambda x : x[3])
+    print('The lowest RMSD model for {0} is {1}'.format(data_path, lowest_rms_model_tuple))
 
     # Extract the lowest scoring model
 
     cwd = os.getcwd()
     os.chdir(data_path)
+
+    subprocess.call([extract_pdb_app, '-in:file:silent', 
+        os.path.join('outputs', 'scratches', lowest_rms_model_tuple[0], 'default.out')])
 
     subprocess.call([extract_pdb_app, '-in:file:silent', 
         os.path.join('outputs', 'scratches', lowest_energy_model_tuple[0], 'default.out')])
@@ -65,7 +70,10 @@ def extract_lowest_energy_model(data_path):
         if not f.endswith('.pdb'):
             continue
 
-        if f.startswith(lowest_energy_model_tuple[1]):
+        if f.startswith(lowest_rms_model_tuple[1]):
+            os.rename(f, 'lowest_rmsd_model.pdb')
+
+        elif f.startswith(lowest_energy_model_tuple[1]):
             os.rename(f, 'lowest_energy_model.pdb')
 
         elif f.startswith('S_00'):
