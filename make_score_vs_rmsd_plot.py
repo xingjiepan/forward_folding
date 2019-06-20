@@ -46,21 +46,38 @@ def get_data_tuples_for_a_score_file(score_file_id, score_file_path):
 
 def make_score_vs_rmsd_plot_for_a_data_set(data_path):
     '''Make a score vs rmsd plot for a data set.'''
+    design_score_file = os.path.join(data_path, 'design_energy.txt')
+    if os.path.exists(design_score_file):
+        with open(design_score_file, 'r') as f:
+            design_score = float(f.readline())
+    
     data = get_data_tuples_for_a_data_set(data_path)
 
     X = [t[3] for t in data]
     Y = [t[2] for t in data]
 
+    min_index = Y.index(min(Y))
+
     x_80 = np.percentile(X, 80)
-    y_80 = np.percentile(Y, 80)
+    y_80 = np.percentile(Y, 70)
 
+    plt.scatter([X[min_index]], [Y[min_index]], color='red', s=50)
     plt.scatter(X, Y, s=2)
-    
-    x_min, x_max, y_min, y_max = plt.axis()
-    plt.axis([0, x_80 + 2, min(Y) - 3, y_80 + 10])
+   
+    if os.path.exists(design_score_file):
+        plt.scatter([0], [design_score], color='green', s=50)
+        min_score = min(Y + [design_score])
+    else:
+        min_score = min(Y)
 
-    #plt.show()
-    plt.savefig(os.path.join(data_path, 'score_vs_rmsd.png'))
+    x_min, x_max, y_min, y_max = plt.axis()
+    plt.axis([-0.1, x_80 + 2, min_score - 3, y_80 + 10])
+
+    plt.xlabel('RMSD (Angstrom)')
+    plt.ylabel('REU')
+
+    plt.show()
+    #plt.savefig(os.path.join(data_path, 'score_vs_rmsd.png'))
 
 
 if __name__ == '__main__':
