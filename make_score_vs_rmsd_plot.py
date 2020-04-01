@@ -6,6 +6,7 @@ Usage:
 
 import os
 import sys
+import json
 
 import numpy as np
 import pandas as pd
@@ -47,6 +48,7 @@ def get_data_tuples_for_a_score_file(score_file_id, score_file_path):
 def make_score_vs_rmsd_plot_for_a_data_set(data_path):
     '''Make a score vs rmsd plot for a data set.'''
     design_score_file = os.path.join(data_path, 'design_energy.txt')
+    relaxed_score_and_rmsd_file = os.path.join(data_path, 'scores_and_rmsds.json')
     if os.path.exists(design_score_file):
         with open(design_score_file, 'r') as f:
             design_score = float(f.readline())
@@ -61,23 +63,35 @@ def make_score_vs_rmsd_plot_for_a_data_set(data_path):
     x_80 = np.percentile(X, 80)
     y_80 = np.percentile(Y, 70)
 
-    plt.scatter([X[min_index]], [Y[min_index]], color='red', s=50)
+    #plt.scatter([X[min_index]], [Y[min_index]], color='red', s=50)
     plt.scatter(X, Y, s=2)
-   
-    if os.path.exists(design_score_file):
-        plt.scatter([0], [design_score], color='green', s=50)
+  
+    if os.path.exists(relaxed_score_and_rmsd_file):
+        with open(relaxed_score_and_rmsd_file, 'r') as f:
+            s_and_ds = json.load(f)
+            relaxed_scores = [s[0] for s in s_and_ds]
+            relaxed_rmsds = [s[1] for s in s_and_ds]
+            
+            min_score = min(relaxed_scores)
+            plt.scatter(relaxed_rmsds, relaxed_scores, color='red', s=5)
+
+
+    elif os.path.exists(design_score_file):
+        plt.scatter([0], [design_score], color='red', s=50)
         min_score = min(Y + [design_score])
     else:
         min_score = min(Y)
 
     x_min, x_max, y_min, y_max = plt.axis()
     plt.axis([-0.1, x_80 + 2, min_score - 3, y_80 + 10])
+    #plt.axis([-0.1, x_80 + 2, min_score - 3, -300])
 
     plt.xlabel('RMSD (Angstrom)')
     plt.ylabel('REU')
 
-    plt.show()
-    #plt.savefig(os.path.join(data_path, 'score_vs_rmsd.png'))
+    #plt.show()
+    plt.savefig(os.path.join(data_path, 'score_vs_rmsd.png'))
+    #plt.savefig(os.path.join(data_path, 'score_vs_rmsd.svg'))
 
 
 if __name__ == '__main__':
