@@ -17,25 +17,23 @@ def generate_fragments(input_fasta, data_path):
     if os.path.exists('fragments'):
       shutil.rmtree(output_path)
 
+    os.makedirs('fragments', exist_ok=True)
     os.chdir('fragments')
 
-    proc = subprocess.Popen(['./fragment_picking_scripts/make_fragments_Wynton_cluster.pl',
-                           '-verbose',
-                           '-id', 'inpuA',
-                           '-frag_sizes', '3,9',
-                           '-n_frags', '200',
-                           '-n_candidates', '1000',
+    proc = subprocess.Popen(['qsub',
+                            os.path.join(cwd, 'fragment_picking_scripts/submit_frag_picking_Wynton.sh'), 
+                            os.path.join(cwd, 'fragment_picking_scripts/make_fragments_Wynton_cluster.pl'),
                            input_fasta],
                            stdout=subprocess.PIPE)
-   
+  
     if proc.stdout:
       stdout = proc.stdout.read().decode()
       print(stdout)
     if proc.stderr:
       print(proc.stderr.read().decode())    
-    
+   
     for line in stdout.split('\n'): 
-        m = re.match(r"Fragment generation jobs started with job ID (\d+).", line)
+        m = re.match(r'Your job (\d+) \("submit_frag_picking_Wynton.sh"\) has been submitted', line)
         if m:
           break
 
@@ -85,7 +83,8 @@ def submit_forward_folding_jobs(input_pdb, data_path, frag_job_id, num_jobs, nst
     input_dir = os.path.join(data_path, 'inputs')
     frag_data_dir = os.path.join(data_path, 'fragments', 'inpuA')
 
-    for f in ['inpuA.200.3mers', 'inpuA.200.9mers', 'inpuA.fasta', 'inpuA.psipred_ss2']:
+    #for f in ['inpuA.200.3mers', 'inpuA.200.9mers', 'inpuA.fasta', 'inpuA.psipred_ss2']:
+    for f in ['inpuA.200.3mers', 'inpuA.200.9mers', 'inpuA.psipred_ss2']:
         if os.path.exists(os.path.join(input_dir, f)):
             os.remove(os.path.join(input_dir, f))
         os.symlink(os.path.abspath(os.path.join(frag_data_dir, f)), os.path.join(input_dir, f))
