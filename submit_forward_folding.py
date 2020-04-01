@@ -81,9 +81,8 @@ def submit_forward_folding_jobs(input_pdb, data_path, frag_job_id, num_jobs, nst
     # Gather the input files
 
     input_dir = os.path.join(data_path, 'inputs')
-    frag_data_dir = os.path.join(data_path, 'fragments', 'inpuA')
+    frag_data_dir = os.path.join(data_path, 'fragments')
 
-    #for f in ['inpuA.200.3mers', 'inpuA.200.9mers', 'inpuA.fasta', 'inpuA.psipred_ss2']:
     for f in ['inpuA.200.3mers', 'inpuA.200.9mers', 'inpuA.psipred_ss2']:
         if os.path.exists(os.path.join(input_dir, f)):
             os.remove(os.path.join(input_dir, f))
