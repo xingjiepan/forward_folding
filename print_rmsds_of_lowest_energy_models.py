@@ -48,9 +48,9 @@ def print_lowest_energy_model_rmsd(data_path):
   
     data = get_data_tuples_for_a_data_set(data_path)
     lowest_energy_model_tuple = min(data, key=lambda x : x[2])
-    print('The lowest energy model for {0} is {1}'.format(data_path, lowest_energy_model_tuple))
+    print('The lowest energy model from {0} predictions for {1} is {2}'.format(len(data), data_path, lowest_energy_model_tuple))
     lowest_rms_model_tuple = min(data, key=lambda x : x[3])
-    print('The lowest RMSD model for {0} is {1}'.format(data_path, lowest_rms_model_tuple))
+    print('The lowest RMSD model from {0} predictions for {1} is {2}'.format(len(data), data_path, lowest_rms_model_tuple))
 
 def print_lowest_energy_model_rmsd_for_multiple_data_sets(data_paths):
     '''Print the RMSDs of lowest energy models for multiple data sets'''
